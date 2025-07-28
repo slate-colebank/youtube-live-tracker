@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Live Tracker",
+  "version": "1.0.0",
+  "description": "A Google Chrome extension used to track your YouTube livestream watchtime.",
+  "permissions": ["storage"],
+  "action": {
+	  "default_icon": "images/icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://www.youtube.com/*", "*://youtube.com/*"],
+      "js": ["dist/scripts/time_tracker.js"],
+			"runAt": "document_end"
+    }
+  ]
+}
