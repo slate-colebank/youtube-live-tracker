@@ -5,12 +5,13 @@
   "description": "A Google Chrome extension used to track your YouTube livestream watchtime.",
   "permissions": ["storage"],
   "action": {
-	  "default_icon": "images/icon.png"
+	  "default_icon": "images/icon.png",
+	  "default_popup": "popup.html"
   },
   "content_scripts": [
     {
       "matches": ["*://www.youtube.com/*", "*://youtube.com/*"],
-      "js": ["dist/scripts/time_tracker.js"],
+      "js": ["dist/content.js"],
 			"runAt": "document_end"
     }
   ]
