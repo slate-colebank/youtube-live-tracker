@@ -11,7 +11,30 @@ let time: Date = new Date();
 
 // Check if the current page is a video page
 function checkUrl(): boolean {
-	return currentUrl.includes('/watch?');
+	// check if we are not on a video page
+	if (!currentUrl.includes('/watch?')) {
+		console.log('Not on video page');
+		return false;
+	}
+
+	// check if there is a live video playing by looking for live chat iframe
+	const liveChatIframe = document.querySelector('#chat-container ytd-live-chat-frame #chatframe');
+	if (!liveChatIframe) {
+		console.log("not a live video");
+		return false;
+	}
+	
+	// check if the live video is actively playing (not paused)
+	const player = document.querySelector('.html5-video-player');
+	const isPlaying = player?.classList.contains('playing-mode');
+	
+	if (isPlaying) {
+		console.log("watching live video (playing)");
+		return true;
+	} else {
+		console.log("live video is paused");
+		return false;
+	}
 }
 
 // Get the channel name of the current page
@@ -49,7 +72,7 @@ function logCurrentChannel(): void {
 		logWatchTime(detectedChannel);
 		console.log(`Current channel: ${detectedChannel}`);
 	} else {
-		console.log('Not on video page');
+		console.log('not logging')
 	}
 }
 

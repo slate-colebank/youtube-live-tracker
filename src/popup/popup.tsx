@@ -9,6 +9,8 @@ interface WatchTimeData {
 const App: React.FC = () => {
   const [watchTimeData, setWatchTimeData] = useState<WatchTimeData>({})
   const [loading, setLoading] = useState(true)
+  const [hoveredItem, setHoveredItem] = useState<number | null>(null)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   useEffect(() => {
     loadWatchTimeData()
@@ -25,12 +27,34 @@ const App: React.FC = () => {
     }
   }
 
-  // Transform data for pie chart
-  const pieChartData = Object.entries(watchTimeData).map(([channel, seconds], index) => ({
-    id: index,
-    value: seconds,
-    label: channel
-  }))
+  const handleClearClick = () => {
+    if (!showConfirm) {
+      setShowConfirm(true)
+      setTimeout(() => setShowConfirm(false), 3000) // Reset after 3 seconds
+    } else {
+      clearWatchTimeData()
+    }
+  }
+
+  const clearWatchTimeData = async () => {
+    try {
+      await chrome.storage.sync.set({ watchTimeData: {} })
+      setWatchTimeData({})
+      setShowConfirm(false)
+      console.log('Watch time data cleared')
+    } catch (error) {
+      console.error('Error clearing watch time data:', error)
+    }
+  }
+
+  // Transform data for pie chart (sorted by watch time)
+  const pieChartData = Object.entries(watchTimeData)
+    .sort(([,a], [,b]) => b - a)
+    .map(([channel, seconds], index) => ({
+      id: index,
+      value: seconds,
+      label: channel
+    }))
 
   // Get top 10 channels sorted by watch time
   const topChannels = Object.entries(watchTimeData)
@@ -71,7 +95,7 @@ const App: React.FC = () => {
           <h1>YouTube Live Tracker</h1>
         </div>
         <div className="content">
-          <p style={{ color: '#ffffff', textAlign: 'center' }}>No watch time data yet.<br />Visit some YouTube videos to start tracking!</p>
+          <p style={{ color: '#ffffff', textAlign: 'center' }}>No watch time data yet.<br />Watch some streams to start tracking.</p>
         </div>
       </div>
     )
@@ -88,21 +112,38 @@ const App: React.FC = () => {
           series={[
             {
               data: pieChartData,
+              valueFormatter: (value) => formatTime(value.value),
+              highlightScope: { fade: 'global', highlight: 'item' }
             },
           ]}
+          onHighlightChange={(highlightedItem) => {
+            setHoveredItem(highlightedItem?.dataIndex ?? null)
+          }}
+          tooltip={{ trigger: 'item' }}
 					{...pieParams}
         />
         
         <div className="top-channels">
-          <h3>Top 10 Channels</h3>
+          <div className="channels-header">
+            <h3>Top 10 Channels</h3>
+            <button onClick={handleClearClick} className="clear-btn-small">
+              {showConfirm ? 'Are you sure?' : 'Clear'}
+            </button>
+          </div>
           <div className="channel-list">
-            {topChannels.map(([channel, seconds], index) => (
-              <div key={channel} className="channel-item">
-                <span className="rank">#{index + 1}</span>
-                <span className="channel-name">{channel}</span>
-                <span className="watch-time">{formatTime(seconds)}</span>
-              </div>
-            ))}
+            {topChannels.map(([channel, seconds], index) => {
+              const isHighlighted = hoveredItem === index
+              return (
+                <div 
+                  key={channel} 
+                  className={`channel-item ${isHighlighted ? 'highlighted' : ''}`}
+                >
+                  <span className="rank">#{index + 1}</span>
+                  <span className="channel-name">{channel}</span>
+                  <span className="watch-time">{formatTime(seconds)}</span>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>

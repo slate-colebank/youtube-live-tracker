@@ -5,8 +5,19 @@
   "description": "A Google Chrome extension used to track your YouTube livestream watchtime.",
   "permissions": ["storage"],
   "action": {
-	  "default_icon": "images/icon.png",
+	  "default_icon": {
+      "16": "images/icon.png",
+      "32": "images/icon.png",
+      "48": "images/icon.png",
+      "128": "images/icon.png"
+    },
 	  "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "images/icon.png",
+    "32": "images/icon.png",
+    "48": "images/icon.png",
+    "128": "images/icon.png"
   },
   "content_scripts": [
     {
