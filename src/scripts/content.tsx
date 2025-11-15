@@ -76,8 +76,6 @@ function logCurrentChannel(): void {
 	}
 }
 
-// Start the 10-second interval logging
 setInterval(logCurrentChannel, interval);
 
-// Also run immediately on load
 setTimeout(logCurrentChannel, 1000);
