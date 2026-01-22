@@ -1,5 +1,5 @@
 # youtube-live-tracker
-A Google Chrome extension used to track your YouTube livestream watchtime.
+A Google Chrome extension used to track your YouTube livestream watchtime. Tracks per-channel watchtime in real time.
 
 Created by Slate Colebank
 
